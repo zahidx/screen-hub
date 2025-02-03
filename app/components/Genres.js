@@ -174,6 +174,11 @@ export default function Home() {
               <div
                 ref={row1Ref}
                 className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar whitespace-nowrap"
+
+                style={{
+                  scrollbarWidth: 'none', // Firefox
+                  msOverflowStyle: 'none', // Internet Explorer, Edge
+                }}
               >
                 {filteredShows.map((show) => (
                   <Link
@@ -219,9 +224,13 @@ export default function Home() {
               </button>
 
               <div
-                ref={row2Ref}
-                className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar whitespace-nowrap"
-              >
+  ref={row2Ref}
+  className="flex gap-4 overflow-x-auto scroll-smooth whitespace-nowrap"
+  style={{
+    scrollbarWidth: 'none', // Firefox
+    msOverflowStyle: 'none', // Internet Explorer, Edge
+  }}
+>
                 {filteredShows.map((show) => (
                   <Link
                     key={show.id}
