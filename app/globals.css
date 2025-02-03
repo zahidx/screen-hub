@@ -27,3 +27,6 @@ body {
   background-size: cover;
   background-position: center;
 }
+body {
+  overflow-x: hidden;
+}

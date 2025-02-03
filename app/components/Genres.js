@@ -1,8 +1,13 @@
-import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import { MdCategory, MdChevronLeft, MdChevronRight, MdMenu } from "react-icons/md";
 import Link from "next/link";
-
+import { useEffect, useRef, useState } from "react";
+import {
+  MdCategory,
+  MdChevronLeft,
+  MdChevronRight,
+  MdMenu,
+} from "react-icons/md";
+import { FaSpinner } from "react-icons/fa"; 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
 const IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500";
@@ -14,6 +19,7 @@ export default function Home() {
   const [disableAutoScroll, setDisableAutoScroll] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false); // State for toggling sidebar on mobile
+  const [page, setPage] = useState(1); // State for page number
 
   const row1Ref = useRef(null);
   const row2Ref = useRef(null);
@@ -29,7 +35,9 @@ export default function Home() {
         const filteredGenres = response.data.genres.slice(2);
         setGenres(filteredGenres);
 
-        const animationGenre = filteredGenres.find((genre) => genre.name.toLowerCase() === 'animation');
+        const animationGenre = filteredGenres.find(
+          (genre) => genre.name.toLowerCase() === "animation"
+        );
         if (animationGenre) {
           setActiveGenre(animationGenre.id);
           handleGenreClick(animationGenre.id);
@@ -45,9 +53,10 @@ export default function Home() {
 
   const handleGenreClick = async (genreId) => {
     setActiveGenre(genreId);
+    setPage(1); // Reset page when genre changes
     try {
       const response = await axios.get(`${BASE_URL}/discover/tv`, {
-        params: { api_key: API_KEY, with_genres: genreId },
+        params: { api_key: API_KEY, with_genres: genreId, page: 1 },
       });
 
       const results = response.data.results;
@@ -59,6 +68,30 @@ export default function Home() {
       }
     } catch (error) {
       console.error("Error fetching filtered shows:", error);
+    }
+  };
+
+  const fetchMoreShows = async () => {
+    if (isLoading) return; // Prevent multiple API calls
+    setIsLoading(true);
+    try {
+      const response = await axios.get(`${BASE_URL}/discover/tv`, {
+        params: {
+          api_key: API_KEY,
+          with_genres: activeGenre,
+          page: page + 1, // Increment the page number
+        },
+      });
+
+      const newShows = response.data.results;
+      if (newShows.length > 0) {
+        setFilteredShows((prevShows) => [...prevShows, ...newShows]); // Append new shows
+        setPage(page + 1); // Update the page number
+      }
+    } catch (error) {
+      console.error("Error fetching more shows:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -109,6 +142,33 @@ export default function Home() {
     }, 2000);
   };
 
+  useEffect(() => {
+    const handleScroll = (ref) => {
+      if (!ref.current) return;
+
+      const { scrollLeft, scrollWidth, clientWidth } = ref.current;
+      const isNearEnd = scrollLeft + clientWidth >= scrollWidth - 10; // Check if near end
+
+      if (isNearEnd) {
+        fetchMoreShows(); // Load more when near the end
+      }
+    };
+
+    const row1Element = row1Ref.current;
+    const row2Element = row2Ref.current;
+
+    const onScroll1 = () => handleScroll(row1Ref);
+    const onScroll2 = () => handleScroll(row2Ref);
+
+    if (row1Element) row1Element.addEventListener("scroll", onScroll1);
+    if (row2Element) row2Element.addEventListener("scroll", onScroll2);
+
+    return () => {
+      if (row1Element) row1Element.removeEventListener("scroll", onScroll1);
+      if (row2Element) row2Element.removeEventListener("scroll", onScroll2);
+    };
+  }, [filteredShows, page, activeGenre, isLoading]);
+
   return (
     <div className="container mx-auto px-6 py-12 flex flex-col lg:flex-row">
       {/* Sidebar Toggle Button for Mobile */}
@@ -122,11 +182,10 @@ export default function Home() {
 
       {/* Sidebar Navigation */}
       <aside
-  className={`w-full lg:w-44 p-4 lg:border-r border-gray-300 overflow-hidden transition-transform duration-300 ease-in-out transform ${
-    sidebarOpen ? "translate-x-0" : "-translate-x-full"
-  } lg:translate-x-0 fixed lg:relative left-0 top-0 bottom-0 z-10`}
->
-   
+        className={`w-full lg:w-44 p-4 lg:border-r border-gray-300 overflow-hidden transition-transform duration-300 ease-in-out transform ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        } lg:translate-x-0 fixed lg:relative left-0 top-0 bottom-0 z-10`}
+      >
         <h2 className="text-2xl font-semibold mb-4 flex items-center">
           <MdCategory className="mr-2 text-yellow-400" /> Genres
         </h2>
@@ -141,7 +200,7 @@ export default function Home() {
                 className={`px-4 py-2 rounded-lg font-bold shadow-md transition text-left w-full ${
                   activeGenre === genre.id
                     ? "bg-[#4d9e4d] text-gray-900"
-                    : "bg-[#5c79a1] text-gray-900 hover:bg-[#6584b0]"
+                    : "bg-[#0e121c] text-gray-50 hover:bg-[#212f4b]"
                 }`}
               >
                 {genre.name}
@@ -174,10 +233,9 @@ export default function Home() {
               <div
                 ref={row1Ref}
                 className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar whitespace-nowrap"
-
                 style={{
-                  scrollbarWidth: 'none', // Firefox
-                  msOverflowStyle: 'none', // Internet Explorer, Edge
+                  scrollbarWidth: "none", // Firefox
+                  msOverflowStyle: "none", // Internet Explorer, Edge
                 }}
               >
                 {filteredShows.map((show) => (
@@ -224,13 +282,13 @@ export default function Home() {
               </button>
 
               <div
-  ref={row2Ref}
-  className="flex gap-4 overflow-x-auto scroll-smooth whitespace-nowrap"
-  style={{
-    scrollbarWidth: 'none', // Firefox
-    msOverflowStyle: 'none', // Internet Explorer, Edge
-  }}
->
+                ref={row2Ref}
+                className="flex gap-4 overflow-x-auto scroll-smooth whitespace-nowrap"
+                style={{
+                  scrollbarWidth: "none", // Firefox
+                  msOverflowStyle: "none", // Internet Explorer, Edge
+                }}
+              >
                 {filteredShows.map((show) => (
                   <Link
                     key={show.id}
@@ -263,6 +321,13 @@ export default function Home() {
             </div>
           </div>
         )}
+
+        {/* Loading */}
+{isLoading && (
+  <div className="text-center mt-8">
+    <FaSpinner className="animate-spin text-4xl text-gray-500 mx-auto" />
+  </div>
+)}
       </main>
     </div>
   );
