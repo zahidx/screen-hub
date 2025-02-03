@@ -6,6 +6,7 @@ import { FiSearch } from "react-icons/fi";
 import { MdOutlineMovie, MdTv, MdCategory } from "react-icons/md";
 import Link from "next/link";
 import Footer from "./components/Footer";
+import Genres from "./components/Genres";
 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -104,51 +105,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Browse by Genre */}
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-3xl font-semibold mb-6 flex items-center">
-          <MdCategory className="mr-2 text-yellow-400" /> Browse by Genre
-        </h2>
-        <div className="flex flex-wrap gap-4">
-          {genres.map((genre) => (
-            <button
-              key={genre.id}
-              onClick={() => handleGenreClick(genre.id)}
-              className={`px-6 py-3 rounded-lg font-bold shadow-md transition ${
-                activeGenre === genre.id
-                  ? "bg-yellow-600 text-gray-900"
-                  : "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
-              }`}
-            >
-              {genre.name}
-            </button>
-          ))}
-        </div>
-
-        {/* Display Filtered TV Shows */}
-        {filteredShows.length > 0 && (
-          <div className="mt-8">
-            <h3 className="text-2xl font-semibold mb-4">TV Shows in {genres.find(g => g.id === activeGenre)?.name}</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-              {filteredShows.map((show) => (
-                <Link key={show.id} href={`/tv/${show.id}`} className="group">
-                  <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105">
-                    <img
-                      src={`${IMAGE_BASE_URL}${show.poster_path}`}
-                      alt={show.name}
-                      className="w-full h-[300px] object-cover"
-                    />
-                    <div className="absolute bottom-0 bg-black bg-opacity-70 w-full text-center py-2 text-white font-semibold">
-                      {show.name}
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-      </section>
+      <Genres />
       <Footer />
+
     </div>
   );
 }
