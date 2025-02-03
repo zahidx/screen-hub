@@ -140,8 +140,8 @@ export default function Home() {
                 onClick={() => handleGenreClick(genre.id)}
                 className={`px-4 py-2 rounded-lg font-bold shadow-md transition text-left w-full ${
                   activeGenre === genre.id
-                    ? "bg-yellow-600 text-gray-900"
-                    : "bg-yellow-500 text-gray-900 hover:bg-yellow-600"
+                    ? "bg-[#4d9e4d] text-gray-900"
+                    : "bg-[#5c79a1] text-gray-900 hover:bg-[#6584b0]"
                 }`}
               >
                 {genre.name}

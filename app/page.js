@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FiSearch } from "react-icons/fi";
@@ -7,6 +6,7 @@ import { MdOutlineMovie, MdTv, MdCategory } from "react-icons/md";
 import Link from "next/link";
 import Footer from "./components/Footer";
 import Genres from "./components/Genres";
+import Trending from "./components/Trending";
 
 const API_KEY = process.env.NEXT_PUBLIC_TMDB_API_KEY;
 const BASE_URL = "https://api.themoviedb.org/3";
@@ -82,31 +82,11 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Trending Movies */}
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-3xl font-semibold mb-6 flex items-center">
-          <MdOutlineMovie className="mr-2 text-yellow-400" /> Trending Movies
-        </h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
-          {trendingMovies.slice(0, 10).map((movie) => (
-            <Link key={movie.id} href={`/movie/${movie.id}`} className="group">
-              <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:scale-105">
-                <img
-                  src={`${IMAGE_BASE_URL}${movie.poster_path}`}
-                  alt={movie.title}
-                  className="w-full h-[300px] object-cover"
-                />
-                <div className="absolute bottom-0 bg-black bg-opacity-70 w-full text-center py-2 text-white font-semibold">
-                  {movie.title}
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
-
+      
+      <Trending />
       <Genres />
       <Footer />
+      
 
     </div>
   );
