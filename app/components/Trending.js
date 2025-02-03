@@ -119,7 +119,7 @@ export default function Trending() {
       </section>
 
       {/* Trending TV Shows Section */}
-      <section className="container mx-auto px-6 py-12">
+      <section className=" pl-20 pr-20 container mx-auto px-6 py-12">
         <h2 className="text-4xl font-bold text-center text-yellow-400 mb-8">
           <MdTv className="inline-block mr-2" size={30} /> Trending TV Shows
         </h2>

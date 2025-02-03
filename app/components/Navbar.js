@@ -4,6 +4,7 @@ import { useState } from "react";
 import { FiSearch, FiUser, FiLogOut, FiSun, FiMoon } from "react-icons/fi";
 import { MdOutlineMovie, MdTv, MdCategory } from "react-icons/md";
 import { useTheme } from "next-themes";
+import Modal from "./Modal"; // Import Modal component
 
 const MenuItem = ({ href, children }) => (
   <a href={href} className="block px-4 py-2 hover:bg-gray-700">
@@ -15,6 +16,7 @@ export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false); // Simulating authentication
   const { theme, setTheme } = useTheme();
   const [mobileMenu, setMobileMenu] = useState(false);
+  const [showModal, setShowModal] = useState(false); // Modal visibility state
 
   const toggleMobileMenu = () => setMobileMenu(prevState => !prevState);
 
@@ -22,13 +24,10 @@ export default function Navbar() {
     <nav className="bg-gray-900 text-white shadow-lg">
       <div className="container mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <a 
-          href="/" 
-          className="text-xl font-bold text-yellow-500 flex items-center  bg-yellow-500  md:bg-transparent md:text-yellow-500 text-black py-1 px-1 rounded-sm md:py-0 md:px-0"
-        >
+        <a href="/" className="text-xl font-bold text-yellow-500 flex items-center bg-yellow-500 md:bg-transparent md:text-yellow-500 text-black py-1 px-1 rounded-sm md:py-0 md:px-0">
           <span className="hidden md:block">📺</span>
-          <span className="hidden md:block">ScreenHub</span> {/* Desktop Logo */}
-          <span className="block md:hidden">sHub</span> {/* Mobile Logo */}
+          <span className="hidden md:block">ScreenHub</span>
+          <span className="block md:hidden">sHub</span>
         </a>
 
         {/* Desktop Menu */}
@@ -95,19 +94,19 @@ export default function Navbar() {
             <option>FR</option>
           </select>
 
-          {/* Sign In button appears only in desktop view */}
+          {/* Sign In button */}
           {!isLoggedIn && (
-            <a 
-              href="/login" 
+            <button 
+              onClick={() => setShowModal(true)} 
               className="bg-yellow-500 px-4 py-2 rounded-md text-gray-900 font-bold hidden md:block"
               aria-label="Sign in"
             >
               Sign In
-            </a>
+            </button>
           )}
 
           {/* Authentication Handling */}
-          {isLoggedIn ? (
+          {isLoggedIn && (
             <button 
               onClick={() => setIsLoggedIn(false)} 
               className="flex items-center space-x-2 p-2 bg-gray-800 rounded-md"
@@ -117,8 +116,6 @@ export default function Navbar() {
               <span>Profile</span>
               <FiLogOut size={18} className="text-red-500" />
             </button>
-          ) : (
-            ""
           )}
         </div>
 
@@ -140,12 +137,14 @@ export default function Navbar() {
           <MenuItem href="/movies">Movies</MenuItem>
           <MenuItem href="/tv">TV Shows</MenuItem>
           <MenuItem href="/watchlist">Watchlist</MenuItem>
-          {/* Mobile Sign In */}
           {!isLoggedIn && (
             <MenuItem href="/login" className="bg-yellow-500 text-gray-900 text-center font-bold">Sign In</MenuItem>
           )}
         </div>
       )}
+
+      {/* Modal */}
+      <Modal showModal={showModal} setShowModal={setShowModal} />
     </nav>
   );
 }
