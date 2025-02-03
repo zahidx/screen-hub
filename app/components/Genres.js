@@ -321,7 +321,6 @@ export default function Home() {
             </div>
           </div>
         )}
-
         {/* Loading */}
 {isLoading && (
   <div className="text-center mt-8">
