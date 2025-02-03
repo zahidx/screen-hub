@@ -1,10 +1,9 @@
 "use client";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff } from "react-icons/fi";
+import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiX } from "react-icons/fi";
 import { FcGoogle } from "react-icons/fc";
 import { FaFacebook } from "react-icons/fa";
-import { FiX } from "react-icons/fi";
 
 const SignUpModal = () => {
   const [email, setEmail] = useState("");
@@ -21,15 +20,17 @@ const SignUpModal = () => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white dark:bg-gradient-to-r dark:from-[#0E1628] dark:to-[#380643] rounded-lg p-8 w-96 shadow-xl transition-all duration-300">
-        {/* Close Button */}
-        <button
-          onClick={handleClose}
-          className="absolute top-3 right-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-        >
-          <FiX size={24} />
-        </button>
+        {/* Close Button beside Sign Up heading */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-3xl font-semibold text-center text-white">Sign Up</h2>
+          <button
+            onClick={handleClose}
+            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
+          >
+            <FiX size={24} />
+          </button>
+        </div>
 
-        <h2 className="text-3xl font-semibold text-center mb-6 text-white">Sign Up</h2>
         <p className="text-center text-gray-400 mb-4">Create an account to get started.</p>
 
         {/* Name Input */}
