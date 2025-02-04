@@ -1,103 +1,159 @@
 "use client";
-
-import { FiSearch } from "react-icons/fi";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { FiSearch, FiX } from "react-icons/fi"; // Add FiX for the clear icon
 
 export default function Hero() {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isInputFocused, setIsInputFocused] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
-  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [loadingResults, setLoadingResults] = useState(false);
+  const router = useRouter();
+// Handle scroll to "explore" section
+const handleScrollToExplore = () => {
+  const exploreSection = document.getElementById("explore");
+  if (exploreSection) {
+    exploreSection.scrollIntoView({ behavior: "smooth" });
+  }
+};
 
-  // Function to fetch search suggestions dynamically from an API (Placeholder)
-  const fetchSuggestions = async (query) => {
-    if (query.length < 3) return;
-    setLoadingSuggestions(true);
-
-    try {
-      const response = await fetch(`/api/search-suggestions?q=${query}`);
-      const data = await response.json();
-      setSuggestions(data.suggestions);
-    } catch (error) {
-      console.error("Error fetching search suggestions:", error);
+  // Fetch search results
+  const fetchSearchResults = async (query) => {
+    if (query.length < 3) {
+      setSearchResults([]);
+      return;
     }
 
-    setLoadingSuggestions(false);
+    setLoadingResults(true);
+
+    try {
+      const response = await fetch(
+        `https://api.themoviedb.org/3/search/multi?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${query}`
+      );
+      const data = await response.json();
+      setSearchResults(data.results);
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+
+    setLoadingResults(false);
   };
 
   useEffect(() => {
     if (searchQuery) {
-      fetchSuggestions(searchQuery);
+      fetchSearchResults(searchQuery);
     } else {
-      setSuggestions([]);
+      setSearchResults([]);
     }
   }, [searchQuery]);
 
+  const handleSearch = () => {
+    if (searchQuery.trim() !== "") {
+      router.push(`/search?q=${searchQuery}`);
+    }
+  };
+
   return (
-    <div className="relative w-full h-[500px] flex items-center justify-center bg-cover bg-center overflow-hidden"
-      style={{ backgroundImage: "url('/hero-bg.jpg')" }}>
+    <div className="w-full h-screen flex bg-gradient-to-r from-[#0E1628] to-[#380643] text-white overflow-hidden">
+      
+{/* Left Section - 60% */}
+<div className="w-[70%] h-screen flex flex-col justify-center items-center px-12 md:px-16">
+  <h1 className="text-5xl md:text-6xl font-extrabold text-yellow-400 drop-shadow-lg leading-tight text-center">
+    ScreenHub
+  </h1>
+  <h2 className="text-3xl md:text-4xl font-semibold text-white mt-2 text-center">
+    Discover Entertainment
+  </h2>
+  <p className="text-gray-300 mt-4 text-lg md:text-2xl text-center">
+    Find trending movies, TV shows, and more with ease.
+  </p>
 
-      {/* Parallax effect */}
-      <div className="absolute inset-0 w-full h-full bg-black bg-opacity-50 z-0"></div>
+  {/* Search Bar */}
+<div className="relative mt-6 w-full max-w-lg">
+  {/* Search Icon */}
+  <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
 
-      {/* Hero Content */}
-      <div className="relative text-center z-10 px-6 md:px-12 py-16 animate__animated animate__fadeIn animate__delay-1s">
-        <h1 className="text-5xl font-extrabold text-yellow-400 drop-shadow-lg hover:scale-110 transition-all duration-300 ease-in-out transform">
-          ScreenHub: Discover Entertainment
-        </h1>
-        <p className="text-gray-300 mt-3 text-lg md:text-2xl max-w-lg mx-auto hover:text-white transition-all duration-300 ease-in-out">
-          Find trending movies, TV shows, and more with ease.
-        </p>
+  {/* Input Field */}
+  <input
+    type="text"
+    placeholder="Search movies, TV shows..."
+    className="bg-white/10 text-white pl-12 pr-5 py-3 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-yellow-500 shadow-md backdrop-blur-md placeholder-gray-400 transition-all"
+    value={searchQuery}
+    onChange={(e) => setSearchQuery(e.target.value)}
+    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+  />
 
-        {/* Search Bar */}
-        <div className="relative mt-8 w-full max-w-lg mx-auto">
-          <input
-            type="text"
-            placeholder="Search movies, TV shows..."
-            className={`bg-gray-700 text-white px-4 py-3 rounded-full pl-12 w-full focus:outline-none shadow-lg transition-all transform ${isInputFocused ? "scale-105 border-yellow-500" : "scale-100"} focus:border-yellow-500 focus:ring-2`}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onFocus={() => setIsInputFocused(true)}
-            onBlur={() => setIsInputFocused(false)}
-          />
-          <FiSearch className="absolute left-4 top-4 text-gray-400" size={20} />
-        </div>
+  {/* Clear Button */}
+  {searchQuery && (
+    <FiX
+      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+      size={20}
+      onClick={() => setSearchQuery("")} // Clear the search query
+    />
+  )}
+</div>
 
-        {/* Search Suggestions */}
+        {/* Explore Button (Smaller) */}
+        <div className="flex justify-center mt-6">
+{/* Explore Now Button */}
+<button
+        onClick={handleScrollToExplore} // Use the new handleScrollToExplore function
+        className="w-40 px-6 py-2 bg-yellow-500 text-gray-900 font-semibold text-base rounded-lg shadow-md hover:bg-yellow-400 transition-all transform hover:scale-105"
+      >
+        Explore Now
+      </button>
+
+</div>
+
+      </div>
+
+      {/* Right Section - 40% */}
+      <div className="w-[30%] h-full overflow-y-auto bg-[#1F0F32] p-10 backdrop-blur-lg shadow-xl rounded-l-2xl">
         {searchQuery && (
-          <div className="absolute top-[120px] w-full max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg p-4 mt-4 z-30">
-            {loadingSuggestions ? (
-              <div className="text-gray-400">Loading...</div>
-            ) : suggestions.length > 0 ? (
-              <ul>
-                {suggestions.map((suggestion) => (
-                  <li key={suggestion} className="text-gray-300 py-2 hover:text-white cursor-pointer">{suggestion}</li>
+          <>
+            <h2 className="text-2xl font-bold mb-4 text-yellow-400">Search Results</h2>
+
+            {loadingResults ? (
+              <div className="text-gray-400 text-center">Loading...</div>
+            ) : searchResults.length > 0 ? (
+              <ul className="space-y-4">
+                {searchResults.map((result) => (
+                  <li
+                    key={result.id}
+                    className="flex items-center space-x-4 p-3 bg-gray-800/70 rounded-lg cursor-pointer transition-all hover:bg-gray-700/80 hover:scale-105 shadow-lg"
+                    onClick={() => router.push(`/details/${result.id}`)}
+                  >
+                    {result.poster_path ? (
+                      <img
+                        src={`https://image.tmdb.org/t/p/w92${result.poster_path}`}
+                        alt={result.title || result.name}
+                        className="w-14 h-20 object-cover rounded-lg"
+                      />
+                    ) : (
+                      <div className="w-14 h-20 flex items-center justify-center bg-gray-700 text-gray-400 text-xs rounded-lg">
+                        No Image
+                      </div>
+                    )}
+                    <div className="flex-1">
+                      <h3 className="text-md text-white">{result.title || result.name}</h3>
+                      <p className="text-gray-400 text-sm">
+                        {result.release_date || result.first_air_date}
+                      </p>
+                      <p className="text-gray-500 text-xs">
+                        {result.media_type === "movie" ? "Movie" : "TV Show"}
+                      </p>
+                    </div>
+                  </li>
                 ))}
               </ul>
             ) : (
-              <div className="text-gray-400">No suggestions found</div>
+              searchQuery.length >= 3 && (
+                <div className="text-gray-400 text-center">No results found</div>
+              )
             )}
-          </div>
+          </>
         )}
-
-        {/* Explore Button */}
-        <div className="mt-8">
-          <a
-            href="#explore"
-            className="inline-block px-8 py-3 bg-yellow-500 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 ease-in-out"
-          >
-            Explore Now
-          </a>
-        </div>
-
       </div>
 
-      {/* Optional: Add a background carousel */}
-      <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat bg-fixed opacity-50 z-0">
-        <div className="flex h-full items-center justify-center">
-          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-black to-black opacity-40"></div>
-        </div>
-      </div>
     </div>
   );
 }
