@@ -1,113 +1,130 @@
 "use client";
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiX } from "react-icons/fi";
-import { FcGoogle } from "react-icons/fc";
-import { FaFacebook } from "react-icons/fa";
 
-const SignUpModal = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const router = useRouter();
+import { useEffect, useState } from "react";
+import { FiEye, FiEyeOff } from "react-icons/fi";
+import { signUpWithEmail } from "../components/firebase";
+import { Toaster, toast } from "react-hot-toast";
+import Modal from "../components/Modal"; // Import the login modal
 
-  // Close modal and navigate back
-  const handleClose = () => {
-    router.push("/"); // Navigate to the homepage or another page
+const SignUp = () => {
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    phone: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [visibility, setVisibility] = useState({
+    password: false,
+    confirmPassword: false,
+  });
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  useEffect(() => {
+    toast.dismiss();
+  }, [formData]);
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const toggleVisibility = (field) => {
+    setVisibility((prev) => ({ ...prev, [field]: !prev[field] }));
+  };
+
+  const handleSignUp = async () => {
+    const { username, email, phone, password, confirmPassword } = formData;
+
+    if (!username || !email || !phone || !password || !confirmPassword) {
+      toast.error("All fields are required.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
+    try {
+      await signUpWithEmail(email, password);
+      toast.success("Signup successful!");
+    } catch (err) {
+      toast.error(err.message);
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-      <div className="bg-white dark:bg-gradient-to-r dark:from-[#0E1628] dark:to-[#380643] rounded-lg p-8 w-96 shadow-xl transition-all duration-300">
-        {/* Close Button beside Sign Up heading */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-3xl font-semibold text-center text-white">Sign Up</h2>
-          <button
-            onClick={handleClose}
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-          >
-            <FiX size={24} />
-          </button>
+    <div className="min-h-screen flex items-center justify-center bg-[#0E1628]">
+      <Toaster position="top-right" reverseOrder={false} />
+      <div className="bg-[#1A1A2E] text-white rounded-2xl p-8 w-96 shadow-xl">
+        <h2 className="text-2xl font-bold text-center text-[#E69A10] mb-4">
+          Create an Account
+        </h2>
+
+        <button className="w-full bg-[#4285F4] text-white font-bold py-2 rounded-lg hover:bg-[#357AE8] transition-all duration-300 shadow-lg mb-4">
+          Continue with Google
+        </button>
+
+        <div className="flex items-center gap-2 text-gray-400 text-sm mb-4">
+          <div className="h-px w-full bg-gray-600"></div>
+          <span>or</span>
+          <div className="h-px w-full bg-gray-600"></div>
         </div>
 
-        <p className="text-center text-gray-400 mb-4">Create an account to get started.</p>
+        {["username", "email", "phone"].map((field, index) => (
+          <div key={index} className="relative mb-3">
+            <input
+              type={field === "email" ? "email" : "text"}
+              name={field}
+              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+              value={formData[field]}
+              onChange={handleInputChange}
+              className="w-full pl-4 pr-4 py-2 bg-[#22223B] text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#E69A10] transition-all"
+            />
+          </div>
+        ))}
 
-        {/* Name Input */}
-        <div className="relative mb-4">
-          <FiUser className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={20} />
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border-2 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-800 text-white border-gray-600 transition duration-200"
-          />
-        </div>
+        {["password", "confirmPassword"].map((field, index) => (
+          <div key={index} className="relative mb-3">
+            <input
+              type={visibility[field] ? "text" : "password"}
+              name={field}
+              placeholder={field === "password" ? "Password" : "Confirm Password"}
+              value={formData[field]}
+              onChange={handleInputChange}
+              className="w-full pl-4 pr-10 py-2 bg-[#22223B] text-white border border-gray-600 rounded-lg focus:ring-2 focus:ring-[#E69A10] transition-all"
+            />
+            <button
+              type="button"
+              onClick={() => toggleVisibility(field)}
+              className="absolute right-3 top-3 text-gray-400"
+            >
+              {visibility[field] ? <FiEyeOff size={20} /> : <FiEye size={20} />}
+            </button>
+          </div>
+        ))}
 
-        {/* Email Input */}
-        <div className="relative mb-4">
-          <FiMail className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={20} />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 border-2 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-800 text-white border-gray-600 transition duration-200"
-          />
-        </div>
-
-        {/* Password Input */}
-        <div className="relative mb-4">
-          <FiLock className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={20} />
-          <input
-            type={showPassword ? "text" : "password"}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-10 pr-10 py-3 border-2 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-400 bg-gray-800 text-white border-gray-600 transition duration-200"
-          />
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-white"
-          >
-            {showPassword ? <FiEyeOff size={20} /> : <FiEye size={20} />}
-          </button>
-        </div>
-
-        {/* Sign Up Button */}
-        <button className="w-full bg-yellow-500 text-gray-900 font-bold py-3 rounded-md hover:bg-yellow-600 transition duration-200">
+        <button
+          onClick={handleSignUp}
+          className="w-full bg-[#E69A10] text-[#1A1A2E] font-bold py-2 rounded-lg hover:bg-[#D4880F] transition-all duration-300 shadow-lg"
+        >
           Sign Up
         </button>
 
-        {/* Divider */}
-        <div className="flex items-center my-6">
-          <hr className="flex-grow border-gray-300 dark:border-gray-700" />
-          <span className="px-2 text-gray-500 dark:text-gray-400">or</span>
-          <hr className="flex-grow border-gray-300 dark:border-gray-700" />
-        </div>
-
-        {/* Social Login Buttons */}
-        <div className="flex flex-col space-y-4">
-          <button className="w-full flex items-center justify-center py-3 border-2 rounded-md hover:bg-gray-700 bg-gray-800 text-white transition duration-200">
-            <FcGoogle size={20} className="mr-2" /> Continue with Google
+        <p className="text-center text-gray-400 text-sm mt-4">
+          Already have an account? {" "}
+          <button
+            onClick={() => setShowLoginModal(true)}
+            className="text-[#E69A10] hover:underline"
+          >
+            Login
           </button>
-          <button className="w-full flex items-center justify-center py-3 border-2 rounded-md hover:bg-blue-800 bg-blue-600 text-white transition duration-200">
-            <FaFacebook size={20} className="mr-2" /> Continue with Facebook
-          </button>
-        </div>
-
-        {/* Sign In Link */}
-        <p className="text-center text-sm text-gray-400 mt-6">
-          Already have an account?{" "}
-          <a href="/sign-in" className="text-yellow-500 hover:underline">
-            Sign in
-          </a>
         </p>
       </div>
+
+      {showLoginModal && <Modal showModal={showLoginModal} setShowModal={setShowLoginModal} />}
     </div>
   );
 };
 
-export default SignUpModal;
+export default SignUp;
