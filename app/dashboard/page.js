@@ -12,7 +12,6 @@ import { IoClose } from "react-icons/io5"; // Close icon for modal
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('darkMode') === 'true');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editField, setEditField] = useState(""); // Which field is being edited ('name' or 'phone')
   const [newData, setNewData] = useState(""); // New data for the field
@@ -24,13 +23,6 @@ const Dashboard = () => {
   const router = useRouter();
   const db = getFirestore(); // Initialize Firestore
   const storage = getStorage(); // Initialize Firebase Storage
-
-  // Toggle Dark Mode with persistence in localStorage
-  const toggleDarkMode = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('darkMode', newMode);
-  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -150,23 +142,17 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen ${darkMode ? "bg-[#1A1A2E]" : "bg-[#F5F5F5]"} transition-all duration-300`}>
+    <div className="min-h-screen bg-[#F5F5F5]">
       <div className="max-w-screen-xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white">{userData.name}'s Dashboard</h1>
-          <button
-            onClick={toggleDarkMode}
-            className="p-2 rounded-full bg-gray-800 text-white hover:bg-gray-700 transition-all"
-          >
-            {darkMode ? "🌞" : "🌙"}
-          </button>
+          <h1 className="text-3xl font-bold text-black">{userData.name}'s Dashboard</h1>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg transition-all duration-300 dark:bg-[#22223B]">
+        <div className="bg-white p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-[#E69A10] mb-4">User Information</h2>
           <div className="space-y-4">
             <div className="flex justify-between">
-              <p className="text-lg font-medium text-gray-700 dark:text-white">
+              <p className="text-lg font-medium text-gray-700">
                 <strong>Name:</strong> {userData.name}
               </p>
               <button
@@ -179,13 +165,13 @@ const Dashboard = () => {
             </div>
 
             <div className="flex justify-between">
-              <p className="text-lg font-medium text-gray-700 dark:text-white">
+              <p className="text-lg font-medium text-gray-700">
                 <strong>Email:</strong> {userData.email}
               </p>
             </div>
 
             <div className="flex justify-between">
-              <p className="text-lg font-medium text-gray-700 dark:text-white">
+              <p className="text-lg font-medium text-gray-700">
                 <strong>Phone Number:</strong> {userData.phoneNumber}
               </p>
               <button
@@ -199,7 +185,7 @@ const Dashboard = () => {
 
             {/* Profile Picture Upload */}
             <div className="mt-6 flex justify-between items-center">
-              <div className="text-lg font-medium text-gray-700 dark:text-white">
+              <div className="text-lg font-medium text-gray-700">
                 <strong>Profile Picture:</strong>
               </div>
               <input
@@ -215,8 +201,8 @@ const Dashboard = () => {
 
         {/* Modal for Editing */}
         {isModalOpen && (
-          <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center transition-all duration-300">
-            <div className="bg-white p-8 rounded-lg w-full max-w-md transform transition-all duration-300 opacity-100 scale-100">
+          <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
+            <div className="bg-white p-8 rounded-lg w-full max-w-md">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-2xl font-semibold text-[#E69A10]">{`Edit ${editField}`}</h3>
                 <button
@@ -235,7 +221,7 @@ const Dashboard = () => {
                 type="text"
                 value={newData}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E69A10] mb-4 transition-all duration-300"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E69A10] mb-4"
                 placeholder={`Enter new ${editField}`}
               />
               <button
@@ -248,11 +234,11 @@ const Dashboard = () => {
           </div>
         )}
 
-        <div className="mt-6 bg-white p-6 rounded-lg shadow-lg dark:bg-[#22223B]">
+        <div className="mt-6 bg-white p-6 rounded-lg shadow-lg">
           <h3 className="text-xl font-semibold text-[#E69A10] mb-4">Recent Activity</h3>
           <div className="space-y-3">
-            <p className="text-gray-600 dark:text-white">🔹 Logged in at: {new Date().toLocaleString()}</p>
-            <p className="text-gray-600 dark:text-white">🔹 Last update: 3 hours ago</p>
+            <p className="text-gray-600">🔹 Logged in at: {new Date().toLocaleString()}</p>
+            <p className="text-gray-600">🔹 Last update: 3 hours ago</p>
           </div>
         </div>
       </div>
