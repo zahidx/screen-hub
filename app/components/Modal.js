@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation"; // Import useRouter
+import { useRouter } from "next/navigation";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { FiEye, FiEyeOff, FiLock, FiMail, FiX } from "react-icons/fi";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { signInWithEmail } from "./firebase"; // Firebase function
+import { signInWithEmail } from "./firebase";
 
 const Modal = ({ showModal, setShowModal }) => {
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,7 +34,8 @@ const Modal = ({ showModal, setShowModal }) => {
       toast.success("Login successful!");
       setTimeout(() => {
         setShowModal(false);
-      }, 1500);
+        router.push("/dashboard");
+      }, 2000);
     } catch (err) {
       toast.error(err.message || "Login failed. Please try again.");
     }
@@ -43,8 +44,8 @@ const Modal = ({ showModal, setShowModal }) => {
   };
 
   const handleOpenSignup = () => {
-    setShowModal(false); // Close login modal
-    router.push("/signup"); // Navigate to /signup
+    setShowModal(false);
+    router.push("/signup");
   };
 
   if (!showModal) return null;
@@ -76,10 +77,7 @@ const Modal = ({ showModal, setShowModal }) => {
           </h2>
 
           <div className="relative mb-3">
-            <FiMail
-              className="absolute left-3 top-3 text-gray-500 dark:text-gray-400"
-              size={20}
-            />
+            <FiMail className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={20} />
             <input
               type="email"
               placeholder="Email"
@@ -91,10 +89,7 @@ const Modal = ({ showModal, setShowModal }) => {
           </div>
 
           <div className="relative mb-4">
-            <FiLock
-              className="absolute left-3 top-3 text-gray-500 dark:text-gray-400"
-              size={20}
-            />
+            <FiLock className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={20} />
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -150,13 +145,12 @@ const Modal = ({ showModal, setShowModal }) => {
               <FcGoogle size={20} className="mr-2" /> Continue with Google
             </button>
             <button className="w-full flex items-center justify-center border py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 dark:border-gray-600 transition-all duration-200">
-              <FaFacebook size={20} className="text-blue-600 mr-2" /> Continue
-              with Facebook
+              <FaFacebook size={20} className="text-blue-600 mr-2" /> Continue with Facebook
             </button>
           </div>
 
           <p className="text-center text-sm text-gray-600 dark:text-gray-300 mt-3">
-            Don't have an account?{" "}
+            Don't have an account? {" "}
             <button
               onClick={handleOpenSignup}
               className="text-[#E69A10] hover:underline"
