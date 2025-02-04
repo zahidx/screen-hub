@@ -3,11 +3,11 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { getFirestore, doc, getDoc, updateDoc, onSnapshot } from "firebase/firestore";
-import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { getFirestore, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth } from "../components/firebase"; // Import Firebase auth and firestore modules
 import { HiOutlinePencil } from "react-icons/hi"; // Pencil icon for editing
 import { IoClose } from "react-icons/io5"; // Close icon for modal
+import { toast } from "react-toastify"; // Import toast for notifications
 
 const Dashboard = () => {
   const [userData, setUserData] = useState(null);
@@ -17,12 +17,8 @@ const Dashboard = () => {
   const [newData, setNewData] = useState(""); // New data for the field
   const [error, setError] = useState(""); // Error message state
   const [success, setSuccess] = useState(""); // Success message state
-  const [profilePic, setProfilePic] = useState(null);
-  const [recentActivity, setRecentActivity] = useState([]);
-  const [role, setRole] = useState("User"); // Assume default role is User
   const router = useRouter();
   const db = getFirestore(); // Initialize Firestore
-  const storage = getStorage(); // Initialize Firebase Storage
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -42,11 +38,9 @@ const Dashboard = () => {
         if (userDoc.exists()) {
           // If the user document exists in Firestore, get the phone number
           fetchedUserData.phoneNumber = userDoc.data().phone || "No Phone Number";
-          fetchedUserData.role = userDoc.data().role || "User"; // Role management
         } else {
           // If no document exists, fallback to 'No Phone Number'
           fetchedUserData.phoneNumber = "No Phone Number";
-          fetchedUserData.role = "User";
         }
 
         setUserData(fetchedUserData);
@@ -104,28 +98,11 @@ const Dashboard = () => {
       }));
 
       setSuccess("Changes saved successfully!");
+      toast.success(`${editField.charAt(0).toUpperCase() + editField.slice(1)} updated successfully!`); // Toast notification on success
       closeEditModal();
     } catch (error) {
       setError("Failed to save changes. Please try again.");
-    }
-  };
-
-  const handleProfilePicUpload = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const storageRef = ref(storage, `profilePics/${auth.currentUser.uid}`);
-      const uploadTask = uploadBytesResumable(storageRef, file);
-
-      uploadTask.on("state_changed", null, (err) => {
-        setError("Error uploading image: " + err.message);
-      }, async () => {
-        const url = await getDownloadURL(uploadTask.snapshot.ref);
-        await updateDoc(doc(db, "users", auth.currentUser.uid), {
-          profilePic: url,
-        });
-        setProfilePic(url);
-        setSuccess("Profile picture updated!");
-      });
+      toast.error("Failed to save changes. Please try again."); // Toast notification on error
     }
   };
 
@@ -142,17 +119,17 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F5F5F5]">
+    <div className="min-h-screen bg-[#F5F5F5] dark:bg-[#121212]">
       <div className="max-w-screen-xl mx-auto p-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-black">{userData.name}'s Dashboard</h1>
+          <h1 className="text-3xl font-bold text-black dark:text-white">{userData.name}'s Dashboard</h1>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-lg">
+        <div className="bg-white dark:bg-[#1F1F1F] p-6 rounded-lg shadow-lg">
           <h2 className="text-2xl font-semibold text-[#E69A10] mb-4">User Information</h2>
           <div className="space-y-4">
             <div className="flex justify-between">
-              <p className="text-lg font-medium text-gray-700">
+              <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
                 <strong>Name:</strong> {userData.name}
               </p>
               <button
@@ -165,13 +142,13 @@ const Dashboard = () => {
             </div>
 
             <div className="flex justify-between">
-              <p className="text-lg font-medium text-gray-700">
+              <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
                 <strong>Email:</strong> {userData.email}
               </p>
             </div>
 
             <div className="flex justify-between">
-              <p className="text-lg font-medium text-gray-700">
+              <p className="text-lg font-medium text-gray-700 dark:text-gray-300">
                 <strong>Phone Number:</strong> {userData.phoneNumber}
               </p>
               <button
@@ -182,32 +159,18 @@ const Dashboard = () => {
                 <HiOutlinePencil size={20} />
               </button>
             </div>
-
-            {/* Profile Picture Upload */}
-            <div className="mt-6 flex justify-between items-center">
-              <div className="text-lg font-medium text-gray-700">
-                <strong>Profile Picture:</strong>
-              </div>
-              <input
-                type="file"
-                onChange={handleProfilePicUpload}
-                className="text-[#E69A10] hover:text-[#D4880F] transition-all"
-                accept="image/*"
-              />
-            </div>
-            {profilePic && <img src={profilePic} alt="Profile" className="w-32 h-32 rounded-full mt-4" />}
           </div>
         </div>
 
         {/* Modal for Editing */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-gray-500 bg-opacity-50 flex justify-center items-center">
-            <div className="bg-white p-8 rounded-lg w-full max-w-md">
+            <div className="bg-white dark:bg-[#2D2D2D] p-8 rounded-lg w-full max-w-md">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-2xl font-semibold text-[#E69A10]">{`Edit ${editField}`}</h3>
                 <button
                   onClick={closeEditModal}
-                  className="text-gray-600 hover:text-gray-800"
+                  className="text-gray-600 hover:text-gray-800 dark:text-gray-300 dark:hover:text-white"
                 >
                   <IoClose size={24} />
                 </button>
@@ -221,7 +184,7 @@ const Dashboard = () => {
                 type="text"
                 value={newData}
                 onChange={handleInputChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E69A10] mb-4"
+                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#E69A10] mb-4 dark:bg-[#3A3A3A] dark:text-white"
                 placeholder={`Enter new ${editField}`}
               />
               <button
@@ -234,11 +197,11 @@ const Dashboard = () => {
           </div>
         )}
 
-        <div className="mt-6 bg-white p-6 rounded-lg shadow-lg">
+        <div className="mt-6 bg-white dark:bg-[#1F1F1F] p-6 rounded-lg shadow-lg">
           <h3 className="text-xl font-semibold text-[#E69A10] mb-4">Recent Activity</h3>
           <div className="space-y-3">
-            <p className="text-gray-600">🔹 Logged in at: {new Date().toLocaleString()}</p>
-            <p className="text-gray-600">🔹 Last update: 3 hours ago</p>
+            <p className="text-gray-600 dark:text-gray-300">🔹 Logged in at: {new Date().toLocaleString()}</p>
+            <p className="text-gray-600 dark:text-gray-300">🔹 Last update: 3 hours ago</p>
           </div>
         </div>
       </div>

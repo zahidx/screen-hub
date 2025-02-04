@@ -1,4 +1,5 @@
 "use client";
+
 import { FiSearch } from "react-icons/fi";
 import { useState, useEffect } from "react";
 
@@ -37,7 +38,7 @@ export default function Hero() {
       style={{ backgroundImage: "url('/hero-bg.jpg')" }}>
 
       {/* Parallax effect */}
-      <div className="absolute inset-0 w-full h-full bg-black bg-opacity-50"></div>
+      <div className="absolute inset-0 w-full h-full bg-black bg-opacity-50 z-0"></div>
 
       {/* Hero Content */}
       <div className="relative text-center z-10 px-6 md:px-12 py-16 animate__animated animate__fadeIn animate__delay-1s">
@@ -64,7 +65,7 @@ export default function Hero() {
 
         {/* Search Suggestions */}
         {searchQuery && (
-          <div className="absolute top-[120px] w-full max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg p-4 mt-4 z-20">
+          <div className="absolute top-[120px] w-full max-w-md mx-auto bg-gray-800 rounded-lg shadow-lg p-4 mt-4 z-30">
             {loadingSuggestions ? (
               <div className="text-gray-400">Loading...</div>
             ) : suggestions.length > 0 ? (
@@ -81,18 +82,18 @@ export default function Hero() {
 
         {/* Explore Button */}
         <div className="mt-8">
-  <a
-    href="#explore"
-    className="inline-block px-8 py-3 bg-yellow-500 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 ease-in-out"
-  >
-    Explore Now
-  </a>
-</div>
+          <a
+            href="#explore"
+            className="inline-block px-8 py-3 bg-yellow-500 text-gray-900 font-bold text-lg rounded-lg shadow-lg hover:bg-yellow-400 transition-all duration-300 transform hover:scale-105 ease-in-out"
+          >
+            Explore Now
+          </a>
+        </div>
 
       </div>
 
       {/* Optional: Add a background carousel */}
-      <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat bg-fixed opacity-50">
+      <div className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat bg-fixed opacity-50 z-0">
         <div className="flex h-full items-center justify-center">
           <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent via-black to-black opacity-40"></div>
         </div>

@@ -1,6 +1,5 @@
 "use client";
 import Hero from "./components/Hero";
-import Footer from "./components/Footer";
 import Genres from "./components/Genres";
 import Trending from "./components/Trending";
 import Carousel from "./components/Carousel";
@@ -15,7 +14,6 @@ export default function Home() {
       <Carousel />
       <Trending />
       <Genres />
-      <Footer />
     </div>
   );
 }

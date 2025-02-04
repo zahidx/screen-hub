@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FiSearch, FiUser, FiLogOut, FiSun, FiMoon } from "react-icons/fi";
 import { MdOutlineMovie, MdTv, MdCategory } from "react-icons/md";
 import { useTheme } from "next-themes";
@@ -17,8 +17,35 @@ export default function Navbar() {
   const { theme, setTheme } = useTheme();
   const [mobileMenu, setMobileMenu] = useState(false);
   const [showModal, setShowModal] = useState(false); // Modal visibility state
+  const [dropdownOpen, setDropdownOpen] = useState({ movies: false, tv: false, genres: false }); // State to track dropdown visibility
+  const dropdownRefs = useRef({}); // To track dropdown menu elements
 
   const toggleMobileMenu = () => setMobileMenu(prevState => !prevState);
+
+  const toggleDropdown = (menu) => {
+    setDropdownOpen(prevState => ({
+      ...prevState,
+      [menu]: !prevState[menu],
+    }));
+  };
+
+  const handleClickOutside = (e) => {
+    // Close all dropdowns if click is outside of any dropdown
+    if (
+      dropdownRefs.current.movies && !dropdownRefs.current.movies.contains(e.target) &&
+      dropdownRefs.current.tv && !dropdownRefs.current.tv.contains(e.target) &&
+      dropdownRefs.current.genres && !dropdownRefs.current.genres.contains(e.target)
+    ) {
+      setDropdownOpen({ movies: false, tv: false, genres: false });
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <nav className="bg-gray-900 text-white shadow-lg">
@@ -31,38 +58,44 @@ export default function Navbar() {
         </a>
 
         {/* Desktop Menu */}
-        <ul className="hidden md:flex space-x-6">
-          <li className="relative group">
-            <button className="flex items-center space-x-2">
+        <ul className="hidden md:flex space-x-6 z-30">
+          <li className="relative" ref={el => (dropdownRefs.current.movies = el)}>
+            <button className="flex items-center space-x-2" onClick={() => toggleDropdown('movies')}>
               <MdOutlineMovie size={20} />
               <span>Movies</span>
             </button>
-            <div className="absolute left-0 top-10 hidden group-hover:block bg-gray-800 p-2 rounded-md">
-              <MenuItem href="/movies/popular">Popular</MenuItem>
-              <MenuItem href="/movies/upcoming">Upcoming</MenuItem>
-            </div>
+            {dropdownOpen.movies && (
+              <div className="absolute left-0 top-10 bg-gray-800 p-2 rounded-md">
+                <MenuItem href="/movies/popular">Popular</MenuItem>
+                <MenuItem href="/movies/upcoming">Upcoming</MenuItem>
+              </div>
+            )}
           </li>
 
-          <li className="relative group">
-            <button className="flex items-center space-x-2">
+          <li className="relative" ref={el => (dropdownRefs.current.tv = el)}>
+            <button className="flex items-center space-x-2" onClick={() => toggleDropdown('tv')}>
               <MdTv size={20} />
               <span>TV Shows</span>
             </button>
-            <div className="absolute left-0 top-10 hidden group-hover:block bg-gray-800 p-2 rounded-md">
-              <MenuItem href="/tv/popular">Popular</MenuItem>
-              <MenuItem href="/tv/ongoing">Ongoing</MenuItem>
-            </div>
+            {dropdownOpen.tv && (
+              <div className="absolute left-0 top-10 bg-gray-800 p-2 rounded-md">
+                <MenuItem href="/tv/popular">Popular</MenuItem>
+                <MenuItem href="/tv/ongoing">Ongoing</MenuItem>
+              </div>
+            )}
           </li>
 
-          <li className="relative group">
-            <button className="flex items-center space-x-2">
+          <li className="relative" ref={el => (dropdownRefs.current.genres = el)}>
+            <button className="flex items-center space-x-2" onClick={() => toggleDropdown('genres')}>
               <MdCategory size={20} />
               <span>Genres</span>
             </button>
-            <div className="absolute left-0 top-10 hidden group-hover:block bg-gray-800 p-2 rounded-md">
-              <MenuItem href="/genre/action">Action</MenuItem>
-              <MenuItem href="/genre/comedy">Comedy</MenuItem>
-            </div>
+            {dropdownOpen.genres && (
+              <div className="absolute left-0 top-10 bg-gray-800 p-2 rounded-md">
+                <MenuItem href="/genre/action">Action</MenuItem>
+                <MenuItem href="/genre/comedy">Comedy</MenuItem>
+              </div>
+            )}
           </li>
 
           <li>
