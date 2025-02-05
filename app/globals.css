@@ -30,3 +30,49 @@ body {
 body {
   overflow-x: hidden;
 }
+/* Add this to your global CSS file (e.g., styles.css) or in your component's CSS module */
+
+@keyframes upDownAnimation {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px); /* Reduced distance for a more subtle effect */
+  }
+}
+
+/* Base animation class */
+.animate-upDown {
+  animation: upDownAnimation infinite;
+  animation-timing-function: cubic-bezier(0.25, 0.8, 0.25, 1); /* Smooth cubic-bezier easing */
+}
+
+/* Individual icon speeds */
+.icon1 {
+  animation-duration: 2s; /* Smooth and slow speed */
+}
+
+.icon2 {
+  animation-duration: 2.2s; /* Slightly slower */
+}
+
+.icon3 {
+  animation-duration: 2.5s; /* Slower for a more graceful movement */
+}
+
+.icon4 {
+  animation-duration: 3s; /* Slow speed for a smoother feel */
+}
+
+.icon5 {
+  animation-duration: 2s; /* Medium speed */
+}
+
+.icon6 {
+  animation-duration: 2.3s; /* Medium speed */
+}
+
+.icon7 {
+  animation-duration: 1.8s; /* A bit faster but still smooth */
+}
+
