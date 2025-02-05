@@ -103,12 +103,6 @@ export default function Navbar() {
           </li>
         </ul>
 
-        {/* Search Bar (for mobile and desktop) */}
-        <div className="relative hidden md:block">
-          <input type="text" placeholder="Search movies, TV shows..." className="bg-gray-700 text-white px-4 py-2 rounded-full pl-10 w-64 focus:outline-none" />
-          <FiSearch className="absolute left-3 top-3 text-gray-400" size={20} />
-        </div>
-
         {/* Right Side: User, Theme Toggle, Language Selector, and Sign In */}
         <div className="flex items-center space-x-4">
           {/* Language Selector */}
@@ -145,8 +139,7 @@ export default function Navbar() {
 
         {/* Mobile Menu Button */}
         <div className="md:hidden flex items-center space-x-4">
-          {/* Search Icon */}
-          <FiSearch className="text-gray-400" size={20} />
+
           {/* Mobile Menu Button */}
           <button className="md:hidden" onClick={toggleMobileMenu} aria-label="Toggle mobile menu">
             ☰
