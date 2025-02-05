@@ -170,164 +170,183 @@ export default function Home() {
   }, [filteredShows, page, activeGenre, isLoading]);
 
   return (
-    <div className="container mx-auto px-6 py-12 flex flex-col lg:flex-row">
-      {/* Sidebar Toggle Button for Mobile */}
+  <div className="container mx-auto px-6 py-12 flex flex-col lg:flex-row">
+    {/* Horizontal Tabs for Mobile */}
+    <div className="flex overflow-x-auto gap-2 pb-4 border-b border-gray-300 lg:hidden custom-scrollbar">
+  {isLoading ? (
+    <div className="text-center">Loading genres...</div>
+  ) : (
+    genres.map((genre) => (
       <button
-        aria-label="Toggle Sidebar"
-        onClick={() => setSidebarOpen(!sidebarOpen)}
-        className="lg:hidden text-gray-600 p-3 rounded-full mb-4"
+        key={genre.id}
+        onClick={() => handleGenreClick(genre.id)}
+        className={`px-4 py-2 rounded-lg font-bold shadow-md transition text-left whitespace-nowrap ${
+          activeGenre === genre.id
+            ? "bg-[#4d9e4d] text-gray-900"
+            : "bg-[#0e121c] text-gray-50 hover:bg-[#212f4b]"
+        }`}
       >
-        <MdMenu size={30} />
+        {genre.name}
       </button>
+    ))
+  )}
+</div>
 
-      {/* Sidebar Navigation */}
-      <aside
-        className={`w-full lg:w-44 p-4 lg:border-r border-gray-300 overflow-hidden transition-transform duration-300 ease-in-out transform ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        } lg:translate-x-0 fixed lg:relative left-0 top-0 bottom-0 z-10`}
-      >
-        <h2 className="text-2xl font-semibold mb-4 flex items-center">
-          <MdCategory className="mr-2 text-yellow-400" /> Genres
-        </h2>
-        <div className="flex flex-col gap-2">
-          {isLoading ? (
-            <div className="text-center">Loading genres...</div>
-          ) : (
-            genres.map((genre) => (
-              <button
-                key={genre.id}
-                onClick={() => handleGenreClick(genre.id)}
-                className={`px-4 py-2 rounded-lg font-bold shadow-md transition text-left w-full ${
-                  activeGenre === genre.id
-                    ? "bg-[#4d9e4d] text-gray-900"
-                    : "bg-[#0e121c] text-gray-50 hover:bg-[#212f4b]"
-                }`}
-              >
-                {genre.name}
-              </button>
-            ))
-          )}
-        </div>
-      </aside>
+<style jsx>{`
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 6px; /* Adjust scrollbar height */
+  }
 
-      {/* Main Content */}
-      <main className="flex-1 lg:pl-6 overflow-x-hidden pt-40">
-        {filteredShows.length > 0 && (
-          <div>
-            <h3 className="text-2xl font-semibold mb-4">
-              TV Shows in {genres.find((g) => g.id === activeGenre)?.name}
-            </h3>
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #4d9e4d; /* Scrollbar color */
+    border-radius: 10px; /* Rounded edges */
+  }
 
-            {/* First Row - Slider */}
-            <div className="relative mb-8">
-              <button
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
-                onClick={() => {
-                  handleSideButtonClick();
-                  scroll("left", row1Ref);
-                }}
-              >
-                <MdChevronLeft size={30} />
-              </button>
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #0e121c; /* Track color */
+  }
+`}</style>
 
-              <div
-                ref={row1Ref}
-                className="flex gap-4 overflow-x-auto scroll-smooth no-scrollbar whitespace-nowrap"
-                style={{
-                  scrollbarWidth: "none", // Firefox
-                  msOverflowStyle: "none", // Internet Explorer, Edge
-                }}
-              >
-                {filteredShows.map((show) => (
-                  <Link
-                    key={show.id}
-                    href={`/tv/${show.id}`}
-                    className="group w-[200px] flex-shrink-0"
-                  >
-                    <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:translate-y-[-20px]">
-                      <img
-                        src={`${IMAGE_BASE_URL}${show.poster_path}`}
-                        alt={show.name}
-                        className="w-full h-[300px] object-cover"
-                      />
-                      <div className="absolute bottom-0 bg-black bg-opacity-70 w-full text-center py-2 text-white font-semibold">
-                        {show.name}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
 
-              <button
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
-                onClick={() => {
-                  handleSideButtonClick();
-                  scroll("right", row1Ref);
-                }}
-              >
-                <MdChevronRight size={30} />
-              </button>
-            </div>
-
-            {/* Second Row - Slider */}
-            <div className="relative">
-              <button
-                className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
-                onClick={() => {
-                  handleSideButtonClick();
-                  scroll("left", row2Ref);
-                }}
-              >
-                <MdChevronLeft size={30} />
-              </button>
-
-              <div
-                ref={row2Ref}
-                className="flex gap-4 overflow-x-auto scroll-smooth whitespace-nowrap"
-                style={{
-                  scrollbarWidth: "none", // Firefox
-                  msOverflowStyle: "none", // Internet Explorer, Edge
-                }}
-              >
-                {filteredShows.map((show) => (
-                  <Link
-                    key={show.id}
-                    href={`/tv/${show.id}`}
-                    className="group w-[200px] flex-shrink-0"
-                  >
-                    <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:translate-y-[-20px]">
-                      <img
-                        src={`${IMAGE_BASE_URL}${show.poster_path}`}
-                        alt={show.name}
-                        className="w-full h-[300px] object-cover"
-                      />
-                      <div className="absolute bottom-0 bg-black bg-opacity-70 w-full text-center py-2 text-white font-semibold">
-                        {show.name}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-
-              <button
-                className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
-                onClick={() => {
-                  handleSideButtonClick();
-                  scroll("right", row2Ref);
-                }}
-              >
-                <MdChevronRight size={30} />
-              </button>
-            </div>
-          </div>
+    {/* Sidebar for Larger Screens */}
+    <aside className="hidden lg:block w-44 p-4 border-r border-gray-300">
+      <h2 className="text-2xl font-semibold mb-4 flex items-center">
+        <MdCategory className="mr-2 text-yellow-400" /> Genres
+      </h2>
+      <div className="flex flex-col gap-2">
+        {isLoading ? (
+          <div className="text-center">Loading genres...</div>
+        ) : (
+          genres.map((genre) => (
+            <button
+              key={genre.id}
+              onClick={() => handleGenreClick(genre.id)}
+              className={`px-4 py-2 rounded-lg font-bold shadow-md transition text-left ${
+                activeGenre === genre.id
+                  ? "bg-[#4d9e4d] text-gray-900"
+                  : "bg-[#0e121c] text-gray-50 hover:bg-[#212f4b]"
+              }`}
+            >
+              {genre.name}
+            </button>
+          ))
         )}
-        {/* Loading */}
-{isLoading && (
-  <div className="text-center mt-8">
-    <FaSpinner className="animate-spin text-4xl text-gray-500 mx-auto" />
+      </div>
+    </aside>
+
+    {/* Main Content */}
+    <main className="flex-1 lg:pl-6 overflow-x-hidden pt-40">
+      {filteredShows.length > 0 && (
+        <div>
+          <h3 className="text-2xl font-semibold mb-4">
+            TV Shows in {genres.find((g) => g.id === activeGenre)?.name}
+          </h3>
+
+         {/* First Row - Slider */}
+<div className="relative mb-8 overflow-hidden"> {/* Prevent overflow */}
+  <button
+    className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
+    onClick={() => {
+      handleSideButtonClick();
+      scroll("left", row1Ref);
+    }}
+  >
+    <MdChevronLeft size={30} />
+  </button>
+
+  <div
+    ref={row1Ref}
+    className="flex gap-4 overflow-x-hidden scroll-smooth no-scrollbar whitespace-nowrap"
+  >
+    {filteredShows.map((show) => (
+      <Link
+        key={show.id}
+        href={`/tv/${show.id}`}
+        className="group w-[200px] flex-shrink-0"
+      >
+        <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:translate-y-[-10px]">
+          <img
+            src={`${IMAGE_BASE_URL}${show.poster_path}`}
+            alt={show.name}
+            className="w-full h-[300px] object-cover"
+          />
+          <div className="absolute bottom-0 bg-black bg-opacity-70 w-full text-center py-2 text-white font-semibold">
+            {show.name}
+          </div>
+        </div>
+      </Link>
+    ))}
   </div>
-)}
-      </main>
-    </div>
-  );
+
+  <button
+    className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
+    onClick={() => {
+      handleSideButtonClick();
+      scroll("right", row1Ref);
+    }}
+  >
+    <MdChevronRight size={30} />
+  </button>
+</div>
+
+         {/* Second Row - Slider */}
+<div className="relative overflow-hidden"> {/* Prevent horizontal overflow */}
+  <button
+    className="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
+    onClick={() => {
+      handleSideButtonClick();
+      scroll("left", row2Ref);
+    }}
+  >
+    <MdChevronLeft size={30} />
+  </button>
+
+  <div
+    ref={row2Ref}
+    className="flex gap-4 overflow-x-hidden scroll-smooth whitespace-nowrap no-scrollbar"
+  >
+    {filteredShows.map((show) => (
+      <Link
+        key={show.id}
+        href={`/tv/${show.id}`}
+        className="group w-[200px] flex-shrink-0"
+      >
+        <div className="relative overflow-hidden rounded-lg shadow-lg transition-transform hover:translate-y-[-10px]">
+          <img
+            src={`${IMAGE_BASE_URL}${show.poster_path}`}
+            alt={show.name}
+            className="w-full h-[300px] object-cover"
+          />
+          <div className="absolute bottom-0 bg-black bg-opacity-70 w-full text-center py-2 text-white font-semibold">
+            {show.name}
+          </div>
+        </div>
+      </Link>
+    ))}
+  </div>
+
+  <button
+    className="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-800 text-white p-3 rounded-full z-10 hover:bg-gray-700"
+    onClick={() => {
+      handleSideButtonClick();
+      scroll("right", row2Ref);
+    }}
+  >
+    <MdChevronRight size={30} />
+  </button>
+</div>
+
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="text-center mt-8">
+          <FaSpinner className="animate-spin text-4xl text-gray-500 mx-auto" />
+        </div>
+      )}
+    </main>
+  </div>
+);
 }

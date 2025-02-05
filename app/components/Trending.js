@@ -75,8 +75,8 @@ export default function Trending() {
   return (
     <div className="bg-gradient-to-b from-[#0E1628] to-[#380643] text-white min-h-screen">
       {/* Trending Movies Section */}
-      <section className="container mx-auto px-6 py-12">
-        <h2 className="text-4xl font-bold text-center text-yellow-400 mb-8">
+      <section className="container mx-auto px-4 sm:px-6 py-12">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center text-yellow-400 mb-8">
           <MdOutlineMovie className="inline-block mr-2" size={30} /> Trending Movies
         </h2>
         {/* Row 1 */}
@@ -87,18 +87,17 @@ export default function Trending() {
                 <img
                   src={`${IMAGE_BASE_URL}${movie.poster_path}`}
                   alt={movie.title}
-                  className="w-full h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
+                  className="w-full h-[250px] sm:h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
                 />
-                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-3 text-white font-semibold text-xl">
+                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-2 sm:py-3 text-white font-semibold text-lg sm:text-xl">
                   {movie.title}
                 </div>
               </div>
             </Link>
           ))}
         </Slider>
-        {/* Add margin to create a gap between the rows */}
         <div className="my-8"></div>
-
+  
         {/* Row 2 */}
         <Slider {...sliderSettings}>
           {trendingMovies.slice(5, 10).map((movie) => (
@@ -107,9 +106,9 @@ export default function Trending() {
                 <img
                   src={`${IMAGE_BASE_URL}${movie.poster_path}`}
                   alt={movie.title}
-                  className="w-full h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
+                  className="w-full h-[250px] sm:h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
                 />
-                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-3 text-white font-semibold text-xl">
+                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-2 sm:py-3 text-white font-semibold text-lg sm:text-xl">
                   {movie.title}
                 </div>
               </div>
@@ -117,10 +116,10 @@ export default function Trending() {
           ))}
         </Slider>
       </section>
-
+  
       {/* Trending TV Shows Section */}
-      <section className=" pl-20 pr-20 container mx-auto px-6 py-12">
-        <h2 className="text-4xl font-bold text-center text-yellow-400 mb-8">
+      <section className="container mx-auto px-4 sm:px-6 py-12">
+        <h2 className="text-3xl sm:text-4xl font-bold text-center text-yellow-400 mb-8">
           <MdTv className="inline-block mr-2" size={30} /> Trending TV Shows
         </h2>
         {/* Row 1 */}
@@ -131,18 +130,17 @@ export default function Trending() {
                 <img
                   src={`${IMAGE_BASE_URL}${show.poster_path}`}
                   alt={show.name}
-                  className="w-full h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
+                  className="w-full h-[250px] sm:h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
                 />
-                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-3 text-white font-semibold text-xl">
+                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-2 sm:py-3 text-white font-semibold text-lg sm:text-xl">
                   {show.name}
                 </div>
               </div>
             </Link>
           ))}
         </Slider>
-        {/* Add margin to create a gap between the rows */}
         <div className="my-8"></div>
-
+  
         {/* Row 2 */}
         <Slider {...sliderSettings}>
           {trendingShows.slice(5, 10).map((show) => (
@@ -151,9 +149,9 @@ export default function Trending() {
                 <img
                   src={`${IMAGE_BASE_URL}${show.poster_path}`}
                   alt={show.name}
-                  className="w-full h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
+                  className="w-full h-[250px] sm:h-[380px] object-cover rounded-xl transition-all duration-700 ease-in-out"
                 />
-                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-3 text-white font-semibold text-xl">
+                <div className="absolute bottom-0 bg-black bg-opacity-60 w-full text-center py-2 sm:py-3 text-white font-semibold text-lg sm:text-xl">
                   {show.name}
                 </div>
               </div>

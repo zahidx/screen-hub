@@ -111,15 +111,6 @@ export default function Navbar() {
 
         {/* Right Side: User, Theme Toggle, Language Selector, and Sign In */}
         <div className="flex items-center space-x-4">
-          {/* Theme Toggle */}
-          <button 
-            onClick={() => setTheme(theme === "dark" ? "light" : "dark")} 
-            className="p-2 bg-gray-800 rounded-full" 
-            aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
-          >
-            {theme === "dark" ? <FiSun size={20} /> : <FiMoon size={20} />}
-          </button>
-
           {/* Language Selector */}
           <select className="bg-gray-800 text-white px-2 py-1 rounded-md">
             <option>EN</option>

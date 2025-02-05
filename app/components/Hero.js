@@ -1,22 +1,21 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { FiSearch, FiX } from "react-icons/fi"; // Add FiX for the clear icon
+import { FiSearch, FiX } from "react-icons/fi";
 
 export default function Hero() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [loadingResults, setLoadingResults] = useState(false);
   const router = useRouter();
-// Handle scroll to "explore" section
-const handleScrollToExplore = () => {
-  const exploreSection = document.getElementById("explore");
-  if (exploreSection) {
-    exploreSection.scrollIntoView({ behavior: "smooth" });
-  }
-};
 
-  // Fetch search results
+  const handleScrollToExplore = () => {
+    const exploreSection = document.getElementById("explore");
+    if (exploreSection) {
+      exploreSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const fetchSearchResults = async (query) => {
     if (query.length < 3) {
       setSearchResults([]);
@@ -24,7 +23,6 @@ const handleScrollToExplore = () => {
     }
 
     setLoadingResults(true);
-
     try {
       const response = await fetch(
         `https://api.themoviedb.org/3/search/multi?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&query=${query}`
@@ -34,7 +32,6 @@ const handleScrollToExplore = () => {
     } catch (error) {
       console.error("Error fetching search results:", error);
     }
-
     setLoadingResults(false);
   };
 
@@ -53,65 +50,53 @@ const handleScrollToExplore = () => {
   };
 
   return (
-    <div className="w-full h-screen flex bg-gradient-to-r from-[#0E1628] to-[#380643] text-white overflow-hidden">
-      
-{/* Left Section - 60% */}
-<div className="w-[70%] h-screen flex flex-col justify-center items-center px-12 md:px-16">
-  <h1 className="text-5xl md:text-6xl font-extrabold text-yellow-400 drop-shadow-lg leading-tight text-center">
-    ScreenHub
-  </h1>
-  <h2 className="text-3xl md:text-4xl font-semibold text-white mt-2 text-center">
-    Discover Entertainment
-  </h2>
-  <p className="text-gray-300 mt-4 text-lg md:text-2xl text-center">
-    Find trending movies, TV shows, and more with ease.
-  </p>
+    <div className="w-full min-h-screen flex flex-col md:flex-row bg-gradient-to-r from-[#0E1628] to-[#380643] text-white overflow-hidden">
+      {/* Left Section */}
+      <div className="w-full md:w-2/3 flex flex-col justify-center items-center px-6 md:px-16 py-10 text-center md:text-left">
+        <h1 className="text-4xl md:text-6xl font-extrabold text-yellow-400 drop-shadow-lg leading-tight">
+          ScreenHub
+        </h1>
+        <h2 className="text-2xl md:text-4xl font-semibold text-white mt-2">
+          Discover Entertainment
+        </h2>
+        <p className="text-gray-300 mt-4 text-lg md:text-2xl">
+          Find trending movies, TV shows, and more with ease.
+        </p>
 
-  {/* Search Bar */}
-<div className="relative mt-6 w-full max-w-lg">
-  {/* Search Icon */}
-  <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+        {/* Search Bar */}
+        <div className="relative mt-6 w-full max-w-lg">
+          <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+          <input
+            type="text"
+            placeholder="Search movies, TV shows..."
+            className="bg-white/10 text-white pl-12 pr-5 py-3 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-yellow-500 shadow-md backdrop-blur-md placeholder-gray-400 transition-all"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+          />
+          {searchQuery && (
+            <FiX
+              className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
+              size={20}
+              onClick={() => setSearchQuery("")}
+            />
+          )}
+        </div>
 
-  {/* Input Field */}
-  <input
-    type="text"
-    placeholder="Search movies, TV shows..."
-    className="bg-white/10 text-white pl-12 pr-5 py-3 rounded-full w-full focus:outline-none focus:ring-2 focus:ring-yellow-500 shadow-md backdrop-blur-md placeholder-gray-400 transition-all"
-    value={searchQuery}
-    onChange={(e) => setSearchQuery(e.target.value)}
-    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-  />
-
-  {/* Clear Button */}
-  {searchQuery && (
-    <FiX
-      className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 cursor-pointer"
-      size={20}
-      onClick={() => setSearchQuery("")} // Clear the search query
-    />
-  )}
-</div>
-
-        {/* Explore Button (Smaller) */}
-        <div className="flex justify-center mt-6">
-{/* Explore Now Button */}
-<button
-        onClick={handleScrollToExplore} // Use the new handleScrollToExplore function
-        className="w-40 px-6 py-2 bg-yellow-500 text-gray-900 font-semibold text-base rounded-lg shadow-md hover:bg-yellow-400 transition-all transform hover:scale-105"
-      >
-        Explore Now
-      </button>
-
-</div>
-
+        {/* Explore Button */}
+        <button
+          onClick={handleScrollToExplore}
+          className="mt-6 px-6 py-2 bg-yellow-500 text-gray-900 font-semibold text-base rounded-lg shadow-md hover:bg-yellow-400 transition-all transform hover:scale-105"
+        >
+          Explore Now
+        </button>
       </div>
 
-      {/* Right Section - 40% */}
-      <div className="w-[30%] h-full overflow-y-auto bg-[#1F0F32] p-10 backdrop-blur-lg shadow-xl rounded-l-2xl">
+      {/* Right Section */}
+      <div className="w-full md:w-1/3 h-auto md:h-screen overflow-y-auto bg-[#1F0F32] p-6 md:p-10 backdrop-blur-lg shadow-xl rounded-t-2xl md:rounded-none md:rounded-l-2xl">
         {searchQuery && (
           <>
-            <h2 className="text-2xl font-bold mb-4 text-yellow-400">Search Results</h2>
-
+            <h2 className="text-xl md:text-2xl font-bold mb-4 text-yellow-400">Search Results</h2>
             {loadingResults ? (
               <div className="text-gray-400 text-center">Loading...</div>
             ) : searchResults.length > 0 ? (
@@ -135,25 +120,18 @@ const handleScrollToExplore = () => {
                     )}
                     <div className="flex-1">
                       <h3 className="text-md text-white">{result.title || result.name}</h3>
-                      <p className="text-gray-400 text-sm">
-                        {result.release_date || result.first_air_date}
-                      </p>
-                      <p className="text-gray-500 text-xs">
-                        {result.media_type === "movie" ? "Movie" : "TV Show"}
-                      </p>
+                      <p className="text-gray-400 text-sm">{result.release_date || result.first_air_date}</p>
+                      <p className="text-gray-500 text-xs">{result.media_type === "movie" ? "Movie" : "TV Show"}</p>
                     </div>
                   </li>
                 ))}
               </ul>
             ) : (
-              searchQuery.length >= 3 && (
-                <div className="text-gray-400 text-center">No results found</div>
-              )
+              searchQuery.length >= 3 && <div className="text-gray-400 text-center">No results found</div>
             )}
           </>
         )}
       </div>
-
     </div>
   );
 }
