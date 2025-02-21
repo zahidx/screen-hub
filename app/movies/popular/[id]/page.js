@@ -7,6 +7,7 @@ import MovieInfo from "./MovieInfo";  // Importing MovieInfo component
 import Trailer from "./Trailer";      // Importing Trailer component
 import Cast from "./Cast";            // Importing Cast component
 import Recommendations from "./Recommendations";  // Importing Recommendations component
+import { AiOutlineArrowLeft } from "react-icons/ai";
 
 const MovieDetails = () => {
   const { id } = useParams();
@@ -76,17 +77,17 @@ const MovieDetails = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-2">
       {/* Back Button with improved accessibility */}
       <motion.button
         onClick={() => router.back()}
-        className="mb-2 px-4 py-2 bg-blue-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition"
+        className="mb-2 px-4 py-2 bg-gray-600 text-white rounded-lg shadow-lg hover:bg-blue-700 transition"
         aria-label="Go back to the previous page"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        ⬅ Back
+       <AiOutlineArrowLeft className="w-5 h-4" />
       </motion.button>
 
       {/* Movie Info */}

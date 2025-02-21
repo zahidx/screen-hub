@@ -19,8 +19,6 @@ const Cast = ({ cast }) => {
               translateZ: 30,
               boxShadow: '0 15px 30px rgba(0, 0, 0, 0.3)',
               backgroundColor: 'rgba(255, 255, 255, 0.1)',
-              // Advanced glowing effect on the card with a blue glow
-              filter: 'brightness(1.5) drop-shadow(0 0 10px rgba(0, 0, 255, 0.7)) drop-shadow(0 0 20px rgba(0, 0, 255, 0.6)) drop-shadow(0 0 30px rgba(0, 0, 255, 0.8))',
             }}
             aria-label={`Cast member: ${actor.name}`}
           >
