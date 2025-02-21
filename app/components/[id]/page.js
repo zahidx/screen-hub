@@ -12,37 +12,48 @@ import { AiOutlineArrowLeft } from "react-icons/ai";
 const MovieDetails = () => {
   const { id } = useParams();
   const router = useRouter();
-  const [movie, setMovie] = useState(null);
+  const [content, setContent] = useState(null);
   const [cast, setCast] = useState([]);
   const [trailer, setTrailer] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [contentType, setContentType] = useState(null);  // To store content type (movie or tv)
 
   // Optimized API fetching with error handling
-  const fetchMovieDetails = async (id) => {
+  const fetchContentDetails = async (id, type) => {
     setLoading(true);  // Reset loading state before fetching
     setError(null);    // Reset error state
+
     try {
-      const [movieRes, castRes, trailerRes, recommendationsRes] = await Promise.all([
-        fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`),
-        fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`),
-        fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`),
-        fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`)
-      ]);
+      let contentRes, castRes, trailerRes, recommendationsRes;
+
+      // Check if the content is a movie or tv
+      if (type === "movie") {
+        contentRes = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+        castRes = await fetch(`https://api.themoviedb.org/3/movie/${id}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+        trailerRes = await fetch(`https://api.themoviedb.org/3/movie/${id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+        recommendationsRes = await fetch(`https://api.themoviedb.org/3/movie/${id}/recommendations?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+      } else if (type === "tv") {
+        contentRes = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+        castRes = await fetch(`https://api.themoviedb.org/3/tv/${id}/credits?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+        trailerRes = await fetch(`https://api.themoviedb.org/3/tv/${id}/videos?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+        recommendationsRes = await fetch(`https://api.themoviedb.org/3/tv/${id}/recommendations?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+      }
 
       // Check for successful response
-      if (!movieRes.ok || !castRes.ok || !trailerRes.ok || !recommendationsRes.ok) {
+      if (!contentRes.ok || !castRes.ok || !trailerRes.ok || !recommendationsRes.ok) {
         throw new Error("Failed to fetch data");
       }
 
-      const movieData = await movieRes.json();
+      const contentData = await contentRes.json();
       const castData = await castRes.json();
       const trailerData = await trailerRes.json();
       const recommendationsData = await recommendationsRes.json();
 
-      // Extract and set the relevant data
-      setMovie(movieData);
+      // Set content type (movie or tv) and data
+      setContentType(type);
+      setContent(contentData);
       setCast(castData.cast.slice(0, 8)); // Top 8 cast members
       setTrailer(trailerData.results.find(video => video.type === "Trailer" && video.site === "YouTube"));
       setRecommendations(recommendationsData.results.slice(0, 6)); // Top 6 recommendations
@@ -54,9 +65,31 @@ const MovieDetails = () => {
     }
   };
 
+  // Fetch content type dynamically by checking both movie and tv endpoints
+  const fetchContentType = async (id) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const movieRes = await fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+      const tvRes = await fetch(`https://api.themoviedb.org/3/tv/${id}?api_key=${process.env.NEXT_PUBLIC_TMDB_API_KEY}&language=en-US`);
+
+      if (movieRes.ok) {
+        fetchContentDetails(id, "movie");
+      } else if (tvRes.ok) {
+        fetchContentDetails(id, "tv");
+      } else {
+        setError("Content not found!");
+        setLoading(false);
+      }
+    } catch (err) {
+      setError("Failed to fetch content type");
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (id) {
-      fetchMovieDetails(id);  // Fetch details on ID change
+      fetchContentType(id);  // Fetch content type and details when ID changes
     }
   }, [id]);
 
@@ -87,14 +120,23 @@ const MovieDetails = () => {
         animate={{ opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-       <AiOutlineArrowLeft className="w-5 h-4" />
+        <AiOutlineArrowLeft className="w-5 h-4" />
       </motion.button>
 
-      {/* Movie Info */}
-      <MovieInfo movie={movie} />
+      {/* Dynamic Info based on type */}
+      {contentType === "movie" && content && (
+        <>
+          <MovieInfo movie={content} />
+          {trailer && <Trailer trailer={trailer} />}
+        </>
+      )}
 
-      {/* Trailer */}
-      {trailer && <Trailer trailer={trailer} />}
+      {contentType === "tv" && content && (
+        <>
+          <MovieInfo tv={content} />
+          {trailer && <Trailer trailer={trailer} />}
+        </>
+      )}
 
       {/* Cast */}
       {cast.length > 0 && <Cast cast={cast} />}

@@ -33,7 +33,7 @@ const PopularTVSeries = () => {
   };
 
   const handleSelectTvSeries = (tvSeries) => {
-    router.push(`../components/tv/${tvSeries.id}`);
+    router.push(`../components/${tvSeries.id}`);
   };
 
   const filteredTvSeries = tvSeries.filter(tv =>
