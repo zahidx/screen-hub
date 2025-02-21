@@ -34,7 +34,7 @@ const PopularMovies = () => {
 
   // Navigate to the details page for the selected movie
   const handleSelectMovie = (movie) => {
-    router.push(`/movies/popular/${movie.id}`); // Corrected path
+    router.push(`../components/${movie.id}`); // Corrected path
   };
 
   const filteredMovies = movies.filter((movie) =>
